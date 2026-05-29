@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusCent - High Fidelity Prototype</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --danger: #ef4444;
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --bg-light: #f9fafb;
+            --bg-white: #ffffff;
+            --border: #e5e7eb;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background-color: var(--bg-light);
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 12px solid #2d2d2d;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Status Bar (fake) */
+        .status-bar {
+            height: 44px;
+            background: var(--bg-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            z-index: 10;
+        }
+
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 25px;
+            background-color: #2d2d2d;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            z-index: 20;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 120px; /* space for bottom nav */
+        }
+
+        /* Warning Banner */
+        .warning-banner {
+            background-color: var(--danger);
+            color: white;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+        }
+
+        .warning-banner svg {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+
+        .warning-text {
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        /* Expense Card */
+        .card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .card-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 8px;
+        }
+
+        .budget-amount {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 24px;
+            margin-top: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+            color: var(--text-dark);
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        .input-field::placeholder {
+            color: #9ca3af;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn-primary {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+            margin-top: 8px;
+        }
+
+        /* Deals List */
+        .deal-card {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .deal-card:active {
+            transform: scale(0.98);
+        }
+
+        .deal-info h3 {
+            margin: 0 0 4px 0;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .deal-info p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .btn-secondary {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: var(--bg-white);
+            border-top: 1px solid var(--border);
+            border-bottom-left-radius: 28px;
+            border-bottom-right-radius: 28px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 15px; /* for home indicator area */
+            z-index: 30;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 600;
+            flex: 1;
+            padding-top: 8px;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .fab-wrapper {
+            position: relative;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fab {
+            width: 56px;
+            height: 56px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+            transform: translateY(-20px);
+            border: 4px solid var(--bg-white);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .fab:hover {
+            transform: translateY(-22px) scale(1.05);
+        }
+
+        .fab svg {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+            stroke-width: 2.5;
+        }
+
+        /* App Header */
+        .app-header {
+            height: 56px;
+            background: var(--bg-white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-dark);
+            z-index: 10;
+        }
+
+        .hamburger-icon {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .app-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        /* Views & Animations */
+        .view {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .view.active-view {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Side Menu */
+        .side-menu {
+            position: absolute;
+            top: 100px;
+            left: -250px;
+            width: 250px;
+            bottom: 70px;
+            background: var(--bg-white);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            transition: left 0.3s ease;
+            z-index: 20;
+            padding: 20px;
+            box-sizing: border-box;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
+        .side-menu.open {
+            left: 0;
+        }
+
+        .menu-item {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: absolute;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="phone-frame">
+        <div class="notch"></div>
+        
+        <div class="status-bar">
+            <span>9:41</span>
+            <div class="status-icons">
+                <svg width="60" height="15" viewBox="0 0 60 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="42" y="2" width="16" height="11" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                    <rect x="44" y="4" width="12" height="7" rx="1" fill="currentColor"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="app-header">
+            <svg class="hamburger-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span class="app-title">CampusCent</span>
+            <div style="width: 24px;"></div> <!-- Spacer -->
+        </div>
+
+        <div class="side-menu" id="sideMenu">
+            <h2 style="margin-top:0">Menu</h2>
+            <div class="menu-item">Account Settings</div>
+            <div class="menu-item">Help & Support</div>
+            <div class="menu-item" style="color: var(--danger); border-bottom: none;">Log Out</div>
+        </div>
+
+        <div id="toast" class="toast">Message</div>
+
+        <div class="content">
+            
+            <!-- Home View -->
+            <div id="home-view" class="view active-view">
+                <!-- Warning Banner -->
+                <div class="warning-banner" id="warningBanner">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    <div class="warning-text">Budget Warning: You have R 45.00 left for the week!</div>
+                </div>
+
+                <!-- Deals Section -->
+                <h2 class="section-title">Student Deals</h2>
+                
+                <div class="deal-card">
+                    <div class="deal-info">
+                        <h3>Campus Cafe</h3>
+                        <p>20% off coffees before 10 AM</p>
+                    </div>
+                    <button class="btn-secondary claim-btn">Claim Deal</button>
+                </div>
+
+                <div class="deal-card">
+                    <div class="deal-info">
+                        <h3>Bookstore Hub</h3>
+                        <p>Buy 1 get 1 free: Notebooks</p>
+                    </div>
+                    <button class="btn-secondary claim-btn">Claim Deal</button>
+                </div>
+            </div>
+
+            <!-- Add Expense View -->
+            <div id="add-view" class="view">
+                <div class="card">
+                    <div class="card-label">REMAINING WEEKLY BUDGET</div>
+                    <h1 class="budget-amount">R 45.00</h1>
+                    
+                    <div class="card-label">LOG A NEW EXPENSE</div>
+                    <div class="input-group">
+                        <input type="number" class="input-field" placeholder="Enter amount (R)" id="expenseAmount">
+                    </div>
+                    <div class="input-group">
+                        <input type="text" class="input-field" placeholder="What was it for?" id="expenseDesc">
+                    </div>
+                    <button class="btn-primary" id="saveExpenseBtn">Save Expense</button>
+                </div>
+            </div>
+
+            <!-- Profile View -->
+            <div id="profile-view" class="view">
+                <h2 class="section-title">My Profile</h2>
+                <div class="card">
+                    <h3 style="margin-top:0">Mbulungeni Kenneth Muthambi</h3>
+                    <p style="color:var(--text-muted)">ST10447819</p>
+                    <hr style="border:none; border-top:1px solid var(--border); margin: 15px 0;">
+                    <p style="font-size: 14px; font-weight:600; color:var(--text-dark)">Major: Information Systems</p>
+                    <p style="font-size: 14px; font-weight:600; color:var(--text-dark)">Campus: Eduvos Ruimsig</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Navigation (Screenshot 4) -->
+        <div class="bottom-nav">
+            <a href="#" class="nav-item active" id="nav-home">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                </svg>
+                Home
+            </a>
+            
+            <div class="fab-wrapper">
+                <div class="fab" id="nav-add">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5V19M5 12H19" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+            </div>
+
+            <a href="#" class="nav-item" id="nav-profile">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+                Profile
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Tab Switching Logic
+        const tabs = {
+            'home': document.getElementById('home-view'),
+            'add': document.getElementById('add-view'),
+            'profile': document.getElementById('profile-view')
+        };
+        
+        function switchTab(tabName) {
+            // Hide all views
+            Object.values(tabs).forEach(view => view.classList.remove('active-view'));
+            // Remove active styles from nav
+            document.getElementById('nav-home').classList.remove('active');
+            document.getElementById('nav-profile').classList.remove('active');
+            
+            // Show new view
+            tabs[tabName].classList.add('active-view');
+            if (tabName === 'home') document.getElementById('nav-home').classList.add('active');
+            if (tabName === 'profile') document.getElementById('nav-profile').classList.add('active');
+            
+            // Close side menu if it was open
+            document.getElementById('sideMenu').classList.remove('open');
+        }
+
+        // Event Listeners for Nav
+        document.getElementById('nav-home').addEventListener('click', (e) => { e.preventDefault(); switchTab('home'); });
+        document.getElementById('nav-add').addEventListener('click', (e) => { e.preventDefault(); switchTab('add'); });
+        document.getElementById('nav-profile').addEventListener('click', (e) => { e.preventDefault(); switchTab('profile'); });
+
+        // Hamburger Menu Logic
+        document.querySelector('.hamburger-icon').addEventListener('click', () => {
+            document.getElementById('sideMenu').classList.toggle('open');
+        });
+
+        // Toast Notification Logic
+        const toast = document.getElementById('toast');
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // Save Expense Logic
+        document.getElementById('saveExpenseBtn').addEventListener('click', () => {
+            const amt = document.getElementById('expenseAmount').value;
+            if (amt) {
+                showToast('Expense of R ' + amt + ' saved successfully!');
+                document.getElementById('expenseAmount').value = '';
+                document.getElementById('expenseDesc').value = '';
+                // Automatically go back to home screen after saving
+                setTimeout(() => switchTab('home'), 1200);
+            } else {
+                showToast('Please enter an amount first.');
+            }
+        });
+
+        // Claim Deals Logic
+        document.querySelectorAll('.claim-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (this.textContent === 'Claim Deal') {
+                    this.textContent = 'Claimed!';
+                    this.style.backgroundColor = '#10b981'; // Green color for success
+                    showToast('Deal successfully claimed!');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
